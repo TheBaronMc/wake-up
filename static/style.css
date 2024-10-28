@@ -1,0 +1,104 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+html {
+    background-color: #121216;
+    font-family: monospace;
+    color: white;
+}
+
+body {
+    margin-left: 3em;
+    margin-right: 3em;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+#main-title {
+    margin-top: 2em;
+    margin-bottom: 2em;
+
+    font-size: 3em;
+
+    text-align: center;
+}
+
+.group {
+    border: solid white 1px;
+    border-radius: 2em;
+
+    padding: 2em;
+}
+
+.group .title {
+    font-size: 2em;
+}
+
+.group .header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.host-list {
+    display: flex;
+    flex-direction: row;
+
+    gap: 1em;
+}
+
+.host {
+    border: solid white 0.8px;
+    border-radius: 1.5em;
+
+    padding: 1em;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.host .title {
+    font-size: 1.5em;
+
+    padding: 1em;
+    text-align: center;
+}
+
+.footer {
+    margin: 1em;
+
+    text-align: center;
+}
+
+.footer a {
+    color: #8AD88D;
+}
+
+.btn-wake {
+    background-color: #8AD88D;
+    color: #121216;
+    font-size: 1.5em;
+
+    border: 1px solid;
+    border-radius: 0.5em;
+
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+
+    cursor: pointer;
+}
+
+.btn-wake:hover {
+    background-color: #78be7b;
+}
+
+.btn-wake:active {
+    background-color: #629c65;
+}
+
