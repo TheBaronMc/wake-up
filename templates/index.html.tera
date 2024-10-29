@@ -1,5 +1,6 @@
 {% extends "base" %}
 {% block body%}
+<h1 id="main-title">Wake Up!</h1>
 {% for name, group in groups %}
 <form class="group">
     <div class="header">

@@ -1,1 +1,13 @@
 {% extends "base" %}
+
+{% block body %}
+<div class="content-login">
+    <form class="login" action="" method="post" >
+        <div class="title">Welcome</div>
+        <div>
+            <input type="password" name="password" placeholder="Password" id="">
+            <input type="submit" value="Submit">
+        </div>
+    </form>
+</div>
+{% endblock body %}

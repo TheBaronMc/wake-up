@@ -14,6 +14,8 @@ pub struct Configuration {
     pub hosts: Option<HashMap<String,Host>>
 }
 
+pub static CONFIGURATION_PATH: &str = "configuration.yml";
+
 pub static CONFIGURATION: RwLock<Configuration> = RwLock::new(Configuration{
     password: String::new(),
     groups: None,
