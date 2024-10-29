@@ -12,7 +12,7 @@ mod wol;
 
 use configuration::{read_configuration, CONFIGURATION};
 
-static configuration_path: &str = "configuration.yml";
+static CONFIGURATION_PATH: &str = "configuration.yml";
 
 #[get("/")]
 fn index() -> Template {
@@ -24,6 +24,11 @@ fn index() -> Template {
     })
 }
 
+#[get("/login")]
+fn login() -> Template {
+    Template::render("login", context! {})
+}
+
 #[get("/<file..>")]
 async fn files(file: PathBuf) -> Option<NamedFile> {
     NamedFile::open(Path::new("static").join(file)).await.ok()
@@ -31,7 +36,7 @@ async fn files(file: PathBuf) -> Option<NamedFile> {
 
 #[get("/reload")]
 fn reaload() -> Status {
-    match read_configuration(configuration_path) {
+    match read_configuration(CONFIGURATION_PATH) {
         Ok(_) => Status::Ok,
         Err(_error) => Status::NotModified
     }
@@ -39,13 +44,13 @@ fn reaload() -> Status {
 
 #[rocket::main]
 async fn main() -> () {
-    if let Err(error) = read_configuration(configuration_path) {
+    if let Err(error) = read_configuration(CONFIGURATION_PATH) {
         println!("{}", error);
         return
     }
 
     let _rocket = rocket::build()
-        .mount("/", routes![index, files, reaload])
+        .mount("/", routes![index, login, files, reaload])
         .attach(Template::fairing())
         .launch()
         .await

@@ -3,6 +3,10 @@
     margin: 0;
 }
 
+html, body {
+    height: 100%;
+}
+
 html {
     background-color: #121216;
     font-family: monospace;
