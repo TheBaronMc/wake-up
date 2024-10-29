@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% block head %}
+        <title>Wake Up!</title>
+        <link rel="stylesheet" href="style.css">
+        {% endblock head %}
+    </head>
+    <body>
+        <h1 id="main-title">Wake Up!</h1>
+        
+        {% block body %}
+        {% endblock body%}
+
+        <div class="footer">
+            {% block footer %}
+            <i>Wake Up!</i> written in <a href="https://www.rust-lang.org/">Rust</a> with <a href="https://rocket.rs/">Rocket</a>
+            {% endblock footer %}
+        </div>
+    </body>
+</html>

@@ -1,46 +1,36 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Wake Up!</title>
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
-        <h1 id="main-title">Wake Up!</h1>
-        {% for name, group in groups %}
-            <form class="group">
-                <div class="header">
-                    <div class="title">{{name}}</div>
-                    <button class="btn-wake"> Wake </button>
-                </div>
-                <div class="host-list">
-                    {% for name, host in group.hosts %}
-                    <div class="host">
-                        <div class="title">{{ name }}</div>
-                        <button class="btn-wake"> Wake </button>
-                    </div>
-                    {% endfor %}
-                </div>
-            </form>
+{% extends "base" %}
+{% block body%}
+{% for name, group in groups %}
+<form class="group">
+    <div class="header">
+        <div class="title">{{name}}</div>
+        <button class="btn-wake"> Wake </button>
+    </div>
+    <div class="host-list">
+        {% for name, host in group.hosts %}
+        <div class="host">
+            <div class="title">{{ name }}</div>
+            <button class="btn-wake"> Wake </button>
+        </div>
         {% endfor %}
-        
-        {% if hosts %}
-            <form class="group">
-                <div class="header">
-                    <div class="title">Hosts</div>
-                    <button class="btn-wake"> Wake </button>
-                </div>
-                <div class="host-list">
-                    {% for name, host in hosts %}
-                    <div class="host">
-                        <div class="title">{{ name }}</div>
-                        <button class="btn-wake"> Wake </button>
-                    </div>
-                    {% endfor %}
-                </div>
-            </form>
-        {% endif %}
+    </div>
+</form>
+{% endfor %}
 
-        <div class="footer">
-            <i>Wake Up!</i> written in <a href="https://www.rust-lang.org/">Rust</a> with <a href="https://rocket.rs/">Rocket</a>
-    </body>
-</html>
+{% if hosts %}
+<form class="group">
+    <div class="header">
+        <div class="title">Hosts</div>
+        <button class="btn-wake"> Wake </button>
+    </div>
+    <div class="host-list">
+        {% for name, host in hosts %}
+        <div class="host">
+            <div class="title">{{ name }}</div>
+            <button class="btn-wake"> Wake </button>
+        </div>
+        {% endfor %}
+    </div>
+</form>
+{% endif %}
+{% endblock body%}
