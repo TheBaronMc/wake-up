@@ -7,10 +7,12 @@
         {% endblock head %}
     </head>
     <body>
-        <h1 id="main-title">Wake Up!</h1>
+        <div class="content">
+            <h1 id="main-title">Wake Up!</h1>
         
-        {% block body %}
-        {% endblock body%}
+            {% block body %}
+            {% endblock body%}
+        </div>
 
         <div class="footer">
             {% block footer %}
