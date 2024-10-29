@@ -1,31 +1,4 @@
-{% macro create_host_list(hosts) %}
-<div class="host-list">
-    {% for name, host in hosts %}
-    <div class="host">
-        <div class="title">{{ name }}</div>
-        <button class="btn-wake"> Wake </button>
-    </div>
-    {% endfor %}
-</div>
-{% endmacro create_group %}
-
-{% macro create_group(name, hosts) %}
-<form class="group">
-    <div class="header">
-        <div class="title">{{name}}</div>
-        <button class="btn-wake"> Wake </button>
-    </div>
-    <div class="host-list">
-        {% for name, host in group.hosts %}
-        <div class="host">
-            <div class="title">{{ name }}</div>
-            <button class="btn-wake"> Wake </button>
-        </div>
-        {% endfor %}
-    </div>
-</form>
-{% endmacro create_group %}
-
+<!DOCTYPE html>
 <html>
     <head>
         <title>Wake Up!</title>
