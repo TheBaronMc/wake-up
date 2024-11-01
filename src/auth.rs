@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use crate::configuration::CONFIGURATION;
 
 
-
-
 pub fn create_token() -> Result<String, String> {
     let key: Hmac<Sha256> = Hmac::new_from_slice(get_pass().as_str().as_bytes()).expect("The key length must be greater than zero");
     let mut claims = BTreeMap::new();

@@ -11,9 +11,12 @@ use crate::configuration::CONFIGURATION;
 use crate::auth::{create_token, verify_pass};
 
 
+static SESSION_TOKEN_KEY: &str = "token";
+
+
 #[get("/")]
 fn index(cookies: &CookieJar<'_>) -> Result<Template, Redirect>  {
-    match cookies.get("token") {
+    match cookies.get(SESSION_TOKEN_KEY) {
         Some(_) => {
             let current_configuration = CONFIGURATION.read().expect("Failed to read configuration");
 
@@ -28,7 +31,7 @@ fn index(cookies: &CookieJar<'_>) -> Result<Template, Redirect>  {
 
 #[get("/login")]
 fn login_get(cookies: &CookieJar<'_>) -> Result<Template, Redirect> {
-    match cookies.get("token") {
+    match cookies.get(SESSION_TOKEN_KEY) {
         Some(_) => Err(Redirect::to(uri!(index))),
         None => Ok(Template::render("login", context! {}))
     }
@@ -46,7 +49,7 @@ fn login_post(cookies: &CookieJar<'_>, credentials: Form<Credentials<'_>>) -> Re
         None => {
             if verify_pass(credentials.password) {
                 let token = create_token().expect("Unexpected error");
-                cookies.add(("token", token));
+                cookies.add((SESSION_TOKEN_KEY, token));
                 Ok(Redirect::to(uri!(index)))
             } else {
                 Err(Redirect::to(uri!(login_get)))
