@@ -1,6 +1,7 @@
 #[macro_use] extern crate rocket;
 
-mod api;
+mod routes;
+mod auth;
 mod host;
 mod group;
 mod configuration;
@@ -16,9 +17,9 @@ async fn main() -> () {
     }
 
     let _rocket = rocket::build()
-        .attach(api::pages::stage())
-        .attach(api::auth::stage())
-        .attach(api::configuration::stage())
+        .attach(routes::pages::stage())
+        .attach(routes::api::login::stage())
+        .attach(routes::api::configuration::stage())
         .launch()
         .await
         .expect("Error while lauching rocket");

@@ -13,6 +13,6 @@ fn reload() -> Status {
 pub fn stage() -> rocket::fairing::AdHoc {
     rocket::fairing::AdHoc::on_ignite("CONFIGURATION", |rocket| async {
         rocket
-        .mount("/api", routes![reload])
+        .mount("/api/configuration", routes![reload])
     })
 }

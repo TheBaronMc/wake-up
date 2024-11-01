@@ -1,7 +1,7 @@
 use rocket::serde::{Deserialize, Serialize, json::Json};
 use rocket::response::status::Unauthorized;
 
-use crate::configuration::CONFIGURATION;
+use crate::auth::{create_token, verify_pass};
 
 #[derive(Deserialize)]
 struct Credentials<'r> {
@@ -9,18 +9,17 @@ struct Credentials<'r> {
 }
 
 #[derive(Serialize)]
-struct Token<'r> {
-    token: &'r str
+struct Token {
+    token: String
 }
 
 #[post("/login", data="<task>")]
 fn login(task: Json<Credentials<'_>>) -> Result<Json<Token>, Unauthorized<String>> {
-    let current_configuration = CONFIGURATION.read().expect("Failed to read configuration");
-
-    if task.password == current_configuration.password {
-        Ok(Json(Token {
-            token: "toto"
-        }))
+    if verify_pass(task.password) {
+        match create_token() {
+            Ok(token) => Ok(Json(Token {token})),
+            Err(error) => Err(Unauthorized(error))
+        }
     } else {
         Err(Unauthorized(String::from("Wrong password")))
     }
