@@ -1,9 +1,9 @@
 use rocket::http::Status;
 
-use crate::configuration::{read_configuration, CONFIGURATION_PATH};
+use crate::{configuration::{read_configuration, CONFIGURATION_PATH}, routes::guard::token::Token};
 
 #[get("/reload")]
-fn reload() -> Status {
+fn reload(_token: Token) -> Status {
     match read_configuration(CONFIGURATION_PATH) {
         Ok(_) => Status::Ok,
         Err(_error) => Status::NotModified

@@ -22,7 +22,6 @@
 <form class="group">
     <div class="header">
         <div class="title">Hosts</div>
-        <button class="btn-wake"> Wake </button>
     </div>
     <div class="host-list">
         {% for name, host in hosts %}
