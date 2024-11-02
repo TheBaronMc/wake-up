@@ -26,9 +26,17 @@ body {
     margin-top: 2em;
     margin-bottom: 2em;
 
-    font-size: 3em;
-
     text-align: center;
+
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    justify-content: center;
+}
+
+#main-title h1 {
+    font-size: 3em;
 }
 
 .content {

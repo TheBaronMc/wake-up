@@ -1,3 +1,5 @@
 /target
 
 /*.yml
+
+.DS_Store
