@@ -109,9 +109,20 @@ fn parse_host(document: &Yaml) -> Result<Host, String> {
         Some(address) => {
             Ok(Host {
                 port,
-                address: String::from(address)
+                address: parse_address(address)
             }) 
         },
         None => Err(String::from("Missing adress"))
     }    
+}
+
+fn parse_address(address: &str) -> [u8; 12] {
+    let mut bytes = [0u8; 12];
+
+    for (i, part) in address.split(':').enumerate() {
+        bytes[i] = u8::from_str_radix(part, 16)
+            .expect("Each part of the address should be a valid hexadecimal number");
+    }
+
+    bytes
 }
