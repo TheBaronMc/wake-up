@@ -128,7 +128,7 @@ body {
 }
 
 
-.content-login {
+.center {
     flex-grow: 1;
 
     display: flex;
@@ -186,4 +186,18 @@ body {
 
 .login input[type=submit]:focus {
     background-color: rgb(140, 140, 140);
+}
+
+.error {
+    flex-direction: column;
+}
+
+.error .code {
+    color: #8AD88D;
+    font-size: 4em;
+}
+
+.error .message {
+    color: white;
+    font-size: 2em;
 }

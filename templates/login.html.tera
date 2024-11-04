@@ -1,7 +1,7 @@
 {% extends "base" %}
 
 {% block body %}
-<div class="content-login">
+<div class="center">
     <form class="login" action="" method="post" >
         <div class="title">Welcome</div>
         <div>

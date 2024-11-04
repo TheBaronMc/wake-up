@@ -9,13 +9,6 @@ pub struct Host {
 
 impl Wake for Host {
     fn wake(&self) -> () {
-        let address: &[u8; 12] = &self.address;
-        let address_str = address.iter().map(|b| format!("{:02X}", b))
-        .collect::<Vec<String>>()    
-        .join(":");
-        let port: &u16 = &self.port;
-        print!("Sending magic packet to host: {}, port: {} ->", address_str, port);
-        wake_on_lan(address, port);
-        println!("Ok");
+        wake_on_lan(&self.address, &self.port);
     }
 }

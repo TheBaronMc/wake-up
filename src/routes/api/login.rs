@@ -1,7 +1,7 @@
 use rocket::serde::{Deserialize, Serialize, json::Json};
-use rocket::response::status::Unauthorized;
 
 use crate::auth::{create_token, verify_pass};
+use crate::routes::errors::ApiError;
 
 #[derive(Deserialize)]
 struct Credentials<'r> {
@@ -14,14 +14,18 @@ struct Token {
 }
 
 #[post("/login", data="<task>")]
-fn login(task: Json<Credentials<'_>>) -> Result<Json<Token>, Unauthorized<String>> {
+fn login(task: Json<Credentials<'_>>) -> Result<Json<Token>, ApiError> {
     if verify_pass(task.password) {
         match create_token() {
             Ok(token) => Ok(Json(Token {token})),
-            Err(error) => Err(Unauthorized(error))
+            Err(error) => Err(ApiError::unauthorized(
+                Some(error)
+            ))
         }
     } else {
-        Err(Unauthorized(String::from("Wrong password")))
+        Err(ApiError::unauthorized(
+            Some(String::from("Wrong password"))
+        ))
     }
 }
 

@@ -7,6 +7,8 @@ mod group;
 mod configuration;
 mod wol;
 
+use routes::catchers;
+
 use crate::configuration::{CONFIGURATION_PATH, read_configuration};
 
 #[rocket::main]
@@ -22,6 +24,7 @@ async fn main() -> () {
         .attach(routes::api::configuration::stage())
         .attach(routes::api::groups::stage())
         .attach(routes::api::hosts::stage())
+        .attach(catchers::stage())
         .launch()
         .await
         .expect("Error while lauching rocket");
