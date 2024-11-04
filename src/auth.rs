@@ -1,5 +1,5 @@
 use hmac::{Hmac, Mac};
-use jwt::{AlgorithmType, Claims, Header, RegisteredClaims, SignWithKey, VerifyWithKey};
+use jwt::{ Claims, RegisteredClaims, SignWithKey, VerifyWithKey};
 use sha2::Sha256;
 use std::collections::BTreeMap;
 
