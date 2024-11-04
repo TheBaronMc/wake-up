@@ -10,15 +10,16 @@ fn wake_up_host(name: &str) -> Result<Status, ApiError> {
             println!("[API] Error while reading configuration {}", error);
             None
         }
-    }.ok_or_else(|| ApiError::internal_error())?;
+    }
+    .ok_or_else(|| ApiError::internal_error())?;
 
     if let Some(hosts) = &config.hosts {
         for (host_name, host) in hosts {
             if host_name.as_str() == name {
                 host.wake();
-                return Ok(Status::Ok)
+                return Ok(Status::Ok);
             } else {
-                return Err(ApiError::not_found(None))
+                return Err(ApiError::not_found(None));
             }
         }
     }
@@ -28,7 +29,6 @@ fn wake_up_host(name: &str) -> Result<Status, ApiError> {
 
 pub fn stage() -> rocket::fairing::AdHoc {
     rocket::fairing::AdHoc::on_ignite("HOSTS", |rocket| async {
-        rocket
-        .mount("/api", routes![wake_up_host])
+        rocket.mount("/api", routes![wake_up_host])
     })
 }

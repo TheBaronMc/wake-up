@@ -1,10 +1,9 @@
 use crate::wol::{wake_on_lan, Wake};
 
-#[derive(Debug)]
-#[derive(serde::Serialize)]
+#[derive(Debug, serde::Serialize)]
 pub struct Host {
     pub address: [u8; 12],
-    pub port: u16
+    pub port: u16,
 }
 
 impl Wake for Host {

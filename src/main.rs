@@ -1,21 +1,22 @@
-#[macro_use] extern crate rocket;
+#[macro_use]
+extern crate rocket;
 
-mod routes;
 mod auth;
-mod host;
-mod group;
 mod configuration;
+mod group;
+mod host;
+mod routes;
 mod wol;
 
 use routes::catchers;
 
-use crate::configuration::{CONFIGURATION_PATH, read_configuration};
+use crate::configuration::{read_configuration, CONFIGURATION_PATH};
 
 #[rocket::main]
 async fn main() -> () {
     if let Err(error) = read_configuration(CONFIGURATION_PATH) {
         println!("{}", error);
-        return
+        return;
     }
 
     let _rocket = rocket::build()
@@ -28,6 +29,6 @@ async fn main() -> () {
         .launch()
         .await
         .expect("Error while lauching rocket");
-    
+
     ()
 }

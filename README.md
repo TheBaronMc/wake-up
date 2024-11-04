@@ -49,3 +49,9 @@ hosts:
     port: 6
     address: B3:11:8E:9F:4A:5D
 ```
+
+## Developer
+
+```sh
+git config --local include.path ../.gitconfig
+```

@@ -2,10 +2,9 @@ use std::collections::HashMap;
 
 use crate::{host::Host, wol::Wake};
 
-#[derive(Debug)]
-#[derive(serde::Serialize)]
+#[derive(Debug, serde::Serialize)]
 pub struct Group {
-   pub hosts: HashMap<String, Host>
+    pub hosts: HashMap<String, Host>,
 }
 
 impl Wake for Group {

@@ -1,11 +1,15 @@
-use rocket::{outcome::Outcome, request::{self, FromRequest}, Request};
-use rocket::http::Status;
 use rocket::http::hyper::header;
+use rocket::http::Status;
+use rocket::{
+    outcome::Outcome,
+    request::{self, FromRequest},
+    Request,
+};
 
 use crate::{auth::verify_token, routes::errors::ApiError};
 
-pub struct Token<'r>{
-    _token: &'r str
+pub struct Token<'r> {
+    _token: &'r str,
 }
 
 #[rocket::async_trait]
@@ -18,15 +22,24 @@ impl<'r> FromRequest<'r> for Token<'r> {
                 if header.starts_with("Bearer") {
                     let token = header[6..header.len()].trim();
                     if verify_token(token) {
-                        Outcome::Success(Token{_token:token})
+                        Outcome::Success(Token { _token: token })
                     } else {
-                        Outcome::Error((Status::Unauthorized, ApiError::unauthorized(Some(String::from("Unauthorized")))))
+                        Outcome::Error((
+                            Status::Unauthorized,
+                            ApiError::unauthorized(Some(String::from("Unauthorized"))),
+                        ))
                     }
                 } else {
-                    Outcome::Error((Status::Unauthorized, ApiError::unauthorized(Some(String::from("Unauthorized")))))
+                    Outcome::Error((
+                        Status::Unauthorized,
+                        ApiError::unauthorized(Some(String::from("Unauthorized"))),
+                    ))
                 }
-            },
-            None => Outcome::Error((Status::Unauthorized, ApiError::unauthorized(Some(String::from("Unauthorized")))))
+            }
+            None => Outcome::Error((
+                Status::Unauthorized,
+                ApiError::unauthorized(Some(String::from("Unauthorized"))),
+            )),
         }
     }
 }

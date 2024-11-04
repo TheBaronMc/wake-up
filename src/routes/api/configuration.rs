@@ -1,6 +1,9 @@
 use rocket::http::Status;
 
-use crate::{configuration::{read_configuration, CONFIGURATION_PATH}, routes::{errors::ApiError, guard::token::Token}};
+use crate::{
+    configuration::{read_configuration, CONFIGURATION_PATH},
+    routes::{errors::ApiError, guard::token::Token},
+};
 
 #[get("/reload")]
 fn reload(_token: Token) -> Result<Status, ApiError> {
@@ -15,7 +18,6 @@ fn reload(_token: Token) -> Result<Status, ApiError> {
 
 pub fn stage() -> rocket::fairing::AdHoc {
     rocket::fairing::AdHoc::on_ignite("CONFIGURATION", |rocket| async {
-        rocket
-        .mount("/api/configuration", routes![reload])
+        rocket.mount("/api/configuration", routes![reload])
     })
 }

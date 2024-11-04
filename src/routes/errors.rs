@@ -1,8 +1,8 @@
 use std::io::Cursor;
 
-use rocket::request::Request;
-use rocket::response::{self, Response, Responder};
 use rocket::http::{ContentType, Status};
+use rocket::request::Request;
+use rocket::response::{self, Responder, Response};
 use rocket::serde::json::json;
 
 #[derive(Debug)]
@@ -13,42 +13,39 @@ pub struct ApiError {
 
 impl ApiError {
     pub fn custom(code: Status, message: Option<String>) -> Self {
-        ApiError {
-            code,
-            message
-        }
+        ApiError { code, message }
     }
 
     pub fn unauthorized(message: Option<String>) -> Self {
         ApiError {
             code: Status::Unauthorized,
-            message
+            message,
         }
     }
 
     pub fn not_found(message: Option<String>) -> Self {
         ApiError {
             code: Status::NoContent,
-            message
+            message,
         }
     }
 
     pub fn internal_error() -> Self {
         ApiError {
             code: Status::InternalServerError,
-            message: None
+            message: None,
         }
     }
 }
-
 
 #[rocket::async_trait]
 impl<'r> Responder<'r, 'static> for ApiError {
     fn respond_to(self, _: &'r Request<'_>) -> response::Result<'static> {
         let body: String = match self.message {
-            Some(message) =>  json!({ "code": self.code.code, "message": message }),
-            None => json!({ "code": self.code.code })
-        }.to_string();
+            Some(message) => json!({ "code": self.code.code, "message": message }),
+            None => json!({ "code": self.code.code }),
+        }
+        .to_string();
 
         Response::build()
             .header(ContentType::JSON)
