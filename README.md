@@ -122,8 +122,6 @@ In this page you can wake up an computer or a group of computer.
 
 </details>
 
-+ **GET** */api/configuration/reload*
-
 ## Configuration
 
 Here is example of configuration file:
