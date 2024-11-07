@@ -50,6 +50,38 @@ hosts:
     address: B3:11:8E:9F:4A:5D
 ```
 
+## Build from source
+
+If you don't find a binary or docker image that satisfies your need, you can follow this process.
+```sh
+# Download the rust toolchain 
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh # From https://rustup.rs/
+# Clone this repo 
+git clone https://github.com/TheBaronMc/wake-up.git
+```
+
+### Build for your machine
+
+It is pretty straightforward.
+```sh
+cd wake-up
+cargo build --release
+```
+After that you will find a binary named `wake-up' under `./target/release`.
+
+### Build for a specific platform
+
+You can find all available targets by running this command.
+```sh
+rustup target list
+rustup target add <target>
+```
+Then run specify the target in the build command.
+```sh
+cd wake-up
+cargo build --release --target <target>
+```
+
 ## Developer
 
 ```sh
