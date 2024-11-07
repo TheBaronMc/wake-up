@@ -5,10 +5,10 @@
 </p>
 <p align="center">Wake On Lan web application</p>
 <p align="center">
-  <a href="https://www.rust-lang.org/" target="_blank"><img src="https://img.shields.io/badge/rust-%23000000.svg?style=for-the-badge&logo=rust&logoColor=white" alt="Rust" /></a>
-  <a href="https://rocket.rs/" target="_blank"><img src="https://img.shields.io/badge/rocket-%23d43949.svg?style=for-the-badge&logo=rocket&logoColor=white" alt="Rocket" /></a>
-  <a href="https://alpinelinux.org/" target="_blank"><img src="https://img.shields.io/badge/Alpine_Linux-%230D597F.svg?style=for-the-badge&logo=alpine-linux&logoColor=white" alt="Alpine" /></a>
-  <a href="https://www.docker.com/" target="_blank"><img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" /></a>
+  <a href="https://www.rust-lang.org/" target="_blank"><img src="https://img.shields.io/badge/rust-%23000000.svg?logo=rust&logoColor=white" alt="Rust" /></a>
+  <a href="https://rocket.rs/" target="_blank"><img src="https://img.shields.io/badge/rocket-%23d43949.svg?logo=rocket&logoColor=white" alt="Rocket" /></a>
+  <a href="https://alpinelinux.org/" target="_blank"><img src="https://img.shields.io/badge/Alpine_Linux-%230D597F.svg?logo=alpine-linux&logoColor=white" alt="Alpine" /></a>
+  <a href="https://www.docker.com/" target="_blank"><img src="https://img.shields.io/badge/docker-%230db7ed.svg?logo=docker&logoColor=white" alt="Docker" /></a>
 </p>
 
 ## Pages
