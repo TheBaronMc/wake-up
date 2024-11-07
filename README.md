@@ -67,7 +67,7 @@ It is pretty straightforward.
 cd wake-up
 cargo build --release
 ```
-After that you will find a binary named `wake-up' under `./target/release`.
+After that you will find a binary named `wake-up` under `./target/release`.
 
 ### Build for a specific platform
 
