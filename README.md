@@ -23,10 +23,105 @@ In this page you can wake up an computer or a group of computer.
 
 ## API
 
-+ **POST** */api/login*
-+ **POST** */api/hosts/<name>*
-+ **POST** */api/groups/<groupname>*
-+ **POST** */api/groups/<groupname>/<hostname>*
+<details>
+ <summary><b>POST</b> <code>/api/login</code> Authentify and give api token</summary>
+
+##### Parameters
+
+> | name          |  type     | data type               | description                                                           |
+> |---------------|-----------|-------------------------|-----------------------------------------------------------------------|
+> | password      |  required | object (JSON)           | User password |
+
+
+##### Responses
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `200`         | `application/json`                | `{ "token": your_token }`                                           |
+> | `401`         | `application/json`                | `{"code":"401","message": error_message}`                           |
+
+</details>
+
+<details>
+ <summary><b>POST</b> <code>/api/groups/<b>{group_name}</b></code> Wakes up the host with the corresponding name</summary>
+> ⚠️ 🛑 A token is required to use this route 🛑 ⚠️
+
+##### Parameters
+
+> None
+
+
+##### Responses
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `200`         | `application/json`                | None                                                                |
+> | `401`         | `application/json`                | `{"code":"401","message": error_message}`                           |
+> | `404`         | `application/json`                | `{"code":"404","message": "Not Found"}`                             |
+> | `500`         | `application/json`                | `{"code":"500"}`                                                    |
+
+</details>
+
+<details>
+ <summary><b>POST</b> <code>/api/groups/<b>{name}</b></code> Wakes up the group with the corresponding name</summary>
+> ⚠️ 🛑 A token is required to use this route 🛑 ⚠️
+
+##### Parameters
+
+> None
+
+
+##### Responses
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `200`         | `application/json`                | None                                                                |
+> | `401`         | `application/json`                | `{"code":"401","message": error_message}`                           |
+> | `404`         | `application/json`                | `{"code":"404","message": "Not Found"}`                             |
+> | `500`         | `application/json`                | `{"code":"500"}`                                                    |
+
+</details>
+
+<details>
+ <summary><b>POST</b> <code>/api/groups/<b>{group_name}</b>/<b>{host_name}</b></code> Wakes up the host with the corresponding name within the group with the corresponding name</summary>
+> ⚠️ 🛑 A token is required to use this route 🛑 ⚠️
+
+##### Parameters
+
+> None
+
+
+##### Responses
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `200`         | `application/json`                | None                                                                |
+> | `401`         | `application/json`                | `{"code":"401","message": error_message}`                           |
+> | `404`         | `application/json`                | `{"code":"404","message": "Not Found"}`                             |
+> | `500`         | `application/json`                | `{"code":"500"}`                                                    |
+
+</details>
+
+<details>
+ <summary><b>GET</b> <code>/api/groups/reload</code> Reload the configuration</summary>
+
+> ⚠️ 🛑 A token is required to use this route 🛑 ⚠️
+
+##### Parameters
+
+> None
+
+
+##### Responses
+
+> | http code     | content-type                      | response                                                            |
+> |---------------|-----------------------------------|---------------------------------------------------------------------|
+> | `200`         | `application/json`                | None                                                                |
+> | `400`         | `application/json`                | `{"code":"400","message": error_message}`                           |
+> | `401`         | `application/json`                | `{"code":"401","message": error_message}`                           |
+
+</details>
+
 + **GET** */api/configuration/reload*
 
 ## Configuration
