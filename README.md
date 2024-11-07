@@ -149,6 +149,10 @@ hosts:
     address: B3:11:8E:9F:4A:5D
 ```
 
+## Security
+
+_Wake Up!_ doesn't support certificats (yet?) so you need to protect it behind a reverse proxy wich have TLS active or find a way to encrypt the communications.
+
 ## Build from source
 
 If you don't find a binary or docker image that satisfies your need, you can follow this process.
