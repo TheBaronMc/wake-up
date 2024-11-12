@@ -1,6 +1,6 @@
 use crate::wol::{wake_on_lan, Wake};
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct Host {
     pub address: [u8; 12],
     pub port: u16,

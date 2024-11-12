@@ -7,9 +7,10 @@ use yaml_rust::{Yaml, YamlLoader};
 use crate::group::Group;
 use crate::host::Host;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Configuration {
     pub password: String,
+    pub port: u16,
     pub groups: Option<HashMap<String, Group>>,
     pub hosts: Option<HashMap<String, Host>>,
 }
@@ -18,17 +19,20 @@ pub static CONFIGURATION_PATH: &str = "configuration.yml";
 
 pub static CONFIGURATION: RwLock<Configuration> = RwLock::new(Configuration {
     password: String::new(),
+    port: 8999,
     groups: None,
     hosts: None,
 });
 
-pub fn read_configuration(path: &str) -> Result<(), String> {
+pub fn read_configuration(path: &str) -> Result<Configuration, String> {
     match fs::read_to_string(path) {
         Ok(file_content) => match YamlLoader::load_from_str(file_content.as_str()) {
             Ok(documents) => {
                 let new_configuration = parse_configuration(&documents[0])?;
-                update_configuation(new_configuration);
-                Ok(())
+                match update_configuation(new_configuration) {
+                    Ok(configuration) => Ok(configuration),
+                    Err(_) => Err(String::from("Unable to update configuration")),
+                }
             }
             Err(error) => Err(error.to_string()),
         },
@@ -36,18 +40,23 @@ pub fn read_configuration(path: &str) -> Result<(), String> {
     }
 }
 
-fn update_configuation(new_configuration: Configuration) {
+fn update_configuation(new_configuration: Configuration) -> Result<Configuration, ()> {
     match CONFIGURATION.write() {
         Ok(mut lock_guard) => {
-            *lock_guard = new_configuration;
+            *lock_guard = new_configuration.clone();
+            Ok(new_configuration)
         }
-        Err(_) => eprintln!("Failed to update app configuration"),
+        Err(_) => {
+            eprintln!("Failed to update app configuration");
+            Err(())
+        }
     }
 }
 
 fn parse_configuration(document: &Yaml) -> Result<Configuration, String> {
     Ok(Configuration {
         password: String::from(document["password"].as_str().expect("No password defined")),
+        port: document["port"].as_i64().unwrap_or(8999) as u16,
         groups: parse_groups(&document["groups"])?, //document["groups"].as_vec().map(f),
         hosts: parse_hosts(&document["hosts"])?,
     })

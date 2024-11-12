@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::{host::Host, wol::Wake};
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct Group {
     pub hosts: HashMap<String, Host>,
 }
