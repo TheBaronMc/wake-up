@@ -9,6 +9,8 @@ use crate::host::Host;
 
 pub static PORT_ENV_VAR: &str = "WAKE_UP_PORT";
 pub static PASSWORD_ENV_VAR: &str = "WAKE_UP_PASSWORD";
+pub static API_ENABLED_ENV_VAR: &str = "WAKE_UP_API_ENABLED";
+pub static WEB_ENABLED_ENV_VAR: &str = "WAKE_UP_WEB_ENABLED";
 
 struct ConfigurationFromFile {
     password: Option<String>,
@@ -39,20 +41,40 @@ pub fn load_configuration() -> Result<Configuration, String> {
             .unwrap_or(current_configuration.port().clone()),
     };
 
+    let api_enabled: Option<bool> = env::var(API_ENABLED_ENV_VAR)
+        .ok()
+        .and_then(|s| str_to_bool(s.as_str()));
+
+    let web_enabled: Option<bool> = env::var(WEB_ENABLED_ENV_VAR)
+        .ok()
+        .and_then(|s| str_to_bool(s.as_str()));
+
     let new_configuration: Configuration = Configuration::new(
         new_password,
         new_port,
-        configuration_from_file
-            .api_enabled
-            .unwrap_or(current_configuration.api_enabled().clone()),
-        configuration_from_file
-            .web_enabled
-            .unwrap_or(current_configuration.web_enabled().clone()),
+        api_enabled.unwrap_or(
+            configuration_from_file
+                .api_enabled
+                .unwrap_or(current_configuration.api_enabled().clone()),
+        ),
+        web_enabled.unwrap_or(
+            configuration_from_file
+                .web_enabled
+                .unwrap_or(current_configuration.web_enabled().clone()),
+        ),
         configuration_from_file.groups,
         configuration_from_file.hosts,
     );
 
     Ok(write_configuration(new_configuration))
+}
+
+fn str_to_bool(s: &str) -> Option<bool> {
+    match s {
+        "true" => Some(true),
+        "false" => Some(false),
+        _ => None,
+    }
 }
 
 fn read_configuration_file(path: &str) -> Result<ConfigurationFromFile, String> {
