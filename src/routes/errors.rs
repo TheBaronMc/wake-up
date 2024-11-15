@@ -29,13 +29,6 @@ impl ApiError {
             message,
         }
     }
-
-    pub fn internal_error() -> Self {
-        ApiError {
-            code: Status::InternalServerError,
-            message: None,
-        }
-    }
 }
 
 #[rocket::async_trait]

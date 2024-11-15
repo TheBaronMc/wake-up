@@ -25,16 +25,21 @@ async fn main() -> () {
     let rocket_config =
         Figment::from(rocket::Config::figment()).merge(("port", wake_up_config.port()));
 
-    let _rocket = rocket::custom(rocket_config)
-        .attach(routes::pages::stage())
-        .attach(routes::api::login::stage())
-        .attach(routes::api::configuration::stage())
-        .attach(routes::api::groups::stage())
-        .attach(routes::api::hosts::stage())
-        .attach(catchers::stage())
-        .launch()
-        .await
-        .expect("Error while lauching rocket");
+    let mut rocket = rocket::custom(rocket_config).attach(catchers::stage());
+
+    if wake_up_config.api_enabled() {
+        rocket = rocket.attach(routes::pages::stage());
+    }
+
+    if wake_up_config.web_enabled() {
+        rocket = rocket
+            .attach(routes::api::login::stage())
+            .attach(routes::api::configuration::stage())
+            .attach(routes::api::groups::stage())
+            .attach(routes::api::hosts::stage());
+    }
+
+    rocket.launch().await.expect("Error while lauching rocket");
 
     ()
 }

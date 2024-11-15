@@ -13,6 +13,8 @@ pub static PASSWORD_ENV_VAR: &str = "WAKE_UP_PASSWORD";
 struct ConfigurationFromFile {
     password: Option<String>,
     port: Option<u16>,
+    api_enabled: Option<bool>,
+    web_enabled: Option<bool>,
     groups: Option<HashMap<String, Group>>,
     hosts: Option<HashMap<String, Host>>,
 }
@@ -40,6 +42,12 @@ pub fn load_configuration() -> Result<Configuration, String> {
     let new_configuration: Configuration = Configuration::new(
         new_password,
         new_port,
+        configuration_from_file
+            .api_enabled
+            .unwrap_or(current_configuration.api_enabled().clone()),
+        configuration_from_file
+            .web_enabled
+            .unwrap_or(current_configuration.web_enabled().clone()),
         configuration_from_file.groups,
         configuration_from_file.hosts,
     );
@@ -47,7 +55,7 @@ pub fn load_configuration() -> Result<Configuration, String> {
     Ok(write_configuration(new_configuration))
 }
 
-pub fn read_configuration_file(path: &str) -> Result<ConfigurationFromFile, String> {
+fn read_configuration_file(path: &str) -> Result<ConfigurationFromFile, String> {
     match fs::read_to_string(path) {
         Ok(file_content) => match YamlLoader::load_from_str(file_content.as_str()) {
             Ok(documents) => parse_configuration(&documents[0]),
@@ -63,6 +71,8 @@ fn parse_configuration(document: &Yaml) -> Result<ConfigurationFromFile, String>
             .as_str()
             .and_then(|s| Some(String::from(s))),
         port: document["port"].as_i64().and_then(|p| Some(p as u16)),
+        api_enabled: document["api_enabled"].as_bool(),
+        web_enabled: document["web_enabled"].as_bool(),
         groups: parse_groups(&document["groups"])?, //document["groups"].as_vec().map(f),
         hosts: parse_hosts(&document["hosts"])?,
     })
