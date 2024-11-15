@@ -1,57 +1,41 @@
 use rocket::http::Status;
 
-use crate::{configuration::CONFIGURATION, routes::errors::ApiError, wol::Wake};
+use crate::{configuration::read_configuration, routes::errors::ApiError, wol::Wake};
 
 #[post("/groups/<groupname>")]
 fn wake_up_group(groupname: &str) -> Result<Status, ApiError> {
-    let config = match CONFIGURATION.read() {
-        Ok(config) => Some(config),
-        Err(error) => {
-            println!("[API] Error while reading configuration {}", error);
-            None
-        }
-    }
-    .ok_or_else(|| ApiError::internal_error())?;
+    let config = read_configuration().ok_or_else(|| ApiError::not_found(None))?;
 
-    if let Some(groups) = &config.groups {
-        for (group_name, group) in groups {
-            if group_name.as_str() == groupname {
-                group.wake();
-                return Ok(Status::Ok);
-            } else {
-                return Err(ApiError::not_found(None));
-            }
-        }
-    }
+    let group = config
+        .groups()
+        .as_ref()
+        .and_then(|groups| groups.get(groupname))
+        .ok_or_else(|| {
+            ApiError::not_found(Some(String::from(format!("No group {} found", groupname))))
+        })?;
 
-    Err(ApiError::not_found(None))
+    group.wake();
+    Ok(Status::Ok)
 }
 
 #[post("/groups/<groupname>/<hostname>")]
 fn wake_up_group_host(groupname: &str, hostname: &str) -> Result<Status, ApiError> {
-    let config = match CONFIGURATION.read() {
-        Ok(config) => Some(config),
-        Err(error) => {
-            println!("[API] Error while reading configuration {}", error);
-            None
-        }
-    }
-    .ok_or_else(|| ApiError::internal_error())?;
+    let config = read_configuration().ok_or_else(|| ApiError::not_found(None))?;
 
-    if let Some(groups) = &config.groups {
-        match groups.get(groupname) {
-            Some(group) => match group.hosts.get(hostname) {
-                Some(host) => {
-                    host.wake();
-                    return Ok(Status::Ok);
-                }
-                None => return Err(ApiError::not_found(None)),
-            },
-            None => return Err(ApiError::not_found(None)),
-        }
-    }
+    let host = config
+        .groups()
+        .as_ref()
+        .and_then(|groups| groups.get(groupname))
+        .and_then(|group| group.hosts.get(hostname))
+        .ok_or_else(|| {
+            ApiError::not_found(Some(String::from(format!(
+                "No host {} found in group {}",
+                hostname, groupname
+            ))))
+        })?;
 
-    Err(ApiError::not_found(None))
+    host.wake();
+    Ok(Status::Ok)
 }
 
 pub fn stage() -> rocket::fairing::AdHoc {

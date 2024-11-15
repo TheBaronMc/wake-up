@@ -7,8 +7,10 @@ use rocket_dyn_templates::{context, Template};
 
 use rocket::http::CookieJar;
 
-use crate::auth::{create_token, verify_pass};
-use crate::configuration::CONFIGURATION;
+use crate::{
+    auth::{create_token, verify_pass},
+    configuration::read_configuration,
+};
 
 static SESSION_TOKEN_KEY: &str = "token";
 
@@ -16,13 +18,13 @@ static SESSION_TOKEN_KEY: &str = "token";
 fn index(cookies: &CookieJar<'_>) -> Result<Template, Redirect> {
     match cookies.get(SESSION_TOKEN_KEY) {
         Some(_) => {
-            let current_configuration = CONFIGURATION.read().expect("Failed to read configuration");
+            let current_configuration = read_configuration().unwrap();
 
             Ok(Template::render(
                 "index",
                 context! {
-                    groups: &current_configuration.groups,
-                    hosts: &current_configuration.hosts
+                    groups: &current_configuration.groups(),
+                    hosts: &current_configuration.hosts()
                 },
             ))
         }

@@ -1,30 +1,26 @@
 use rocket::http::Status;
 
-use crate::{configuration::CONFIGURATION, routes::errors::ApiError, wol::Wake};
+use crate::{
+    configuration::{read_configuration, Configuration},
+    routes::errors::ApiError,
+    wol::Wake,
+};
 
 #[post("/hosts/<name>")]
 fn wake_up_host(name: &str) -> Result<Status, ApiError> {
-    let config = match CONFIGURATION.read() {
-        Ok(config) => Some(config),
-        Err(error) => {
-            println!("[API] Error while reading configuration {}", error);
-            None
-        }
-    }
-    .ok_or_else(|| ApiError::internal_error())?;
+    let config: Configuration = read_configuration()
+        .ok_or_else(|| ApiError::not_found(Some(format!("No user named {}", name))))?;
 
-    if let Some(hosts) = &config.hosts {
-        for (host_name, host) in hosts {
-            if host_name.as_str() == name {
-                host.wake();
-                return Ok(Status::Ok);
-            } else {
-                return Err(ApiError::not_found(None));
-            }
-        }
-    }
+    let host = config
+        .hosts()
+        .as_ref()
+        .and_then(|hosts| hosts.get(name))
+        .ok_or_else(|| {
+            ApiError::not_found(Some(String::from(format!("No host {} found", name))))
+        })?;
 
-    Err(ApiError::not_found(None))
+    host.wake();
+    Ok(Status::Ok)
 }
 
 pub fn stage() -> rocket::fairing::AdHoc {

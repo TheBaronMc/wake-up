@@ -3,7 +3,7 @@ use jwt::{Claims, RegisteredClaims, SignWithKey, VerifyWithKey};
 use sha2::Sha256;
 use std::collections::BTreeMap;
 
-use crate::configuration::CONFIGURATION;
+use crate::configuration::read_configuration;
 
 pub fn create_token() -> Result<String, String> {
     let key: Hmac<Sha256> = Hmac::new_from_slice(get_pass().as_str().as_bytes())
@@ -31,11 +31,5 @@ pub fn verify_pass(password: &str) -> bool {
 }
 
 fn get_pass() -> String {
-    String::from(
-        CONFIGURATION
-            .read()
-            .expect("Unable to read configuration")
-            .password
-            .as_str(),
-    )
+    read_configuration().unwrap().password().clone()
 }

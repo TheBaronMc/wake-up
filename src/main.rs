@@ -1,5 +1,5 @@
-use configuration::{read_configuration, CONFIGURATION, CONFIGURATION_PATH};
 use figment::Figment;
+use reader::load_configuration;
 use routes::catchers;
 
 #[macro_use]
@@ -9,12 +9,13 @@ mod auth;
 mod configuration;
 mod group;
 mod host;
+mod reader;
 mod routes;
 mod wol;
 
 #[rocket::main]
 async fn main() -> () {
-    let configuration_result = read_configuration(CONFIGURATION_PATH);
+    let configuration_result = load_configuration();
     if let Err(error) = configuration_result {
         println!("{}", error);
         return;
@@ -22,7 +23,7 @@ async fn main() -> () {
 
     let wake_up_config = configuration_result.unwrap();
     let rocket_config =
-        Figment::from(rocket::Config::figment()).merge(("port", wake_up_config.port));
+        Figment::from(rocket::Config::figment()).merge(("port", wake_up_config.port()));
 
     let _rocket = rocket::custom(rocket_config)
         .attach(routes::pages::stage())

@@ -1,132 +1,84 @@
 use std::collections::HashMap;
-use std::fs;
 use std::sync::RwLock;
-
-use yaml_rust::{Yaml, YamlLoader};
 
 use crate::group::Group;
 use crate::host::Host;
 
+type GroupList = HashMap<String, Group>;
+type HostList = HashMap<String, Host>;
+
+static CONFIGURATION: RwLock<Option<Configuration>> = RwLock::new(None);
+
 #[derive(Debug, Clone)]
 pub struct Configuration {
-    pub password: String,
-    pub port: u16,
-    pub groups: Option<HashMap<String, Group>>,
-    pub hosts: Option<HashMap<String, Host>>,
+    password: String,
+    port: u16,
+    groups: Option<GroupList>,
+    hosts: Option<HostList>,
 }
 
-pub static CONFIGURATION_PATH: &str = "configuration.yml";
-
-pub static CONFIGURATION: RwLock<Configuration> = RwLock::new(Configuration {
-    password: String::new(),
-    port: 8999,
-    groups: None,
-    hosts: None,
-});
-
-pub fn read_configuration(path: &str) -> Result<Configuration, String> {
-    match fs::read_to_string(path) {
-        Ok(file_content) => match YamlLoader::load_from_str(file_content.as_str()) {
-            Ok(documents) => {
-                let new_configuration = parse_configuration(&documents[0])?;
-                match update_configuation(new_configuration) {
-                    Ok(configuration) => Ok(configuration),
-                    Err(_) => Err(String::from("Unable to update configuration")),
-                }
-            }
-            Err(error) => Err(error.to_string()),
-        },
-        Err(error) => Err(error.to_string()),
-    }
-}
-
-fn update_configuation(new_configuration: Configuration) -> Result<Configuration, ()> {
-    match CONFIGURATION.write() {
-        Ok(mut lock_guard) => {
-            *lock_guard = new_configuration.clone();
-            Ok(new_configuration)
-        }
-        Err(_) => {
-            eprintln!("Failed to update app configuration");
-            Err(())
-        }
-    }
-}
-
-fn parse_configuration(document: &Yaml) -> Result<Configuration, String> {
-    Ok(Configuration {
-        password: String::from(document["password"].as_str().expect("No password defined")),
-        port: document["port"].as_i64().unwrap_or(8999) as u16,
-        groups: parse_groups(&document["groups"])?, //document["groups"].as_vec().map(f),
-        hosts: parse_hosts(&document["hosts"])?,
-    })
-}
-
-fn parse_groups(document: &Yaml) -> Result<Option<HashMap<String, Group>>, String> {
-    match document.as_hash() {
-        Some(hash) => {
-            let mut groups: HashMap<String, Group> = HashMap::new();
-
-            for entry in hash {
-                let name: String =
-                    String::from(entry.0.as_str().expect("Failed to parse group name"));
-                let group = parse_group(entry.1)?;
-                groups.insert(name, group);
-            }
-
-            Ok(Some(groups))
-        }
-        None => Ok(None),
-    }
-}
-
-fn parse_group(document: &Yaml) -> Result<Group, String> {
-    match parse_hosts(document)? {
-        None => Err(String::from("No hosts defined")),
-        Some(hosts) => Ok(Group { hosts }),
-    }
-}
-
-fn parse_hosts(document: &Yaml) -> Result<Option<HashMap<String, Host>>, String> {
-    match document.as_hash() {
-        Some(hash) => {
-            let mut hosts: HashMap<String, Host> = HashMap::new();
-
-            for entry in hash {
-                let name: String =
-                    String::from(entry.0.as_str().expect("Failed to parse host name"));
-                let host = parse_host(entry.1)?;
-                hosts.insert(name, host);
-            }
-
-            Ok(Some(hosts))
-        }
-        None => Ok(None),
-    }
-}
-
-fn parse_host(document: &Yaml) -> Result<Host, String> {
-    let mut port: u16 = 6;
-    if let Some(p) = document["port"].as_i64() {
-        port = p as u16;
-    }
-
-    match document["address"].as_str() {
-        Some(address) => Ok(Host {
+impl Configuration {
+    pub fn new(
+        password: String,
+        port: u16,
+        groups: Option<GroupList>,
+        hosts: Option<HostList>,
+    ) -> Self {
+        Configuration {
+            password,
             port,
-            address: parse_address(address),
-        }),
-        None => Err(String::from("Missing adress")),
+            groups,
+            hosts,
+        }
+    }
+
+    fn update(&mut self, new_configuration: &Configuration) {
+        self.password = new_configuration.password.clone();
+        self.groups = new_configuration.groups.clone();
+        self.hosts = new_configuration.hosts.clone();
+    }
+
+    pub fn password(&self) -> &String {
+        &self.password
+    }
+
+    pub fn port(&self) -> &u16 {
+        &self.port
+    }
+
+    pub fn groups(&self) -> &Option<GroupList> {
+        &self.groups
+    }
+
+    pub fn hosts(&self) -> &Option<HostList> {
+        &self.hosts
     }
 }
 
-fn parse_address(address: &str) -> [u8; 12] {
-    let mut bytes = [0u8; 12];
+impl Default for Configuration {
+    fn default() -> Self {
+        Configuration {
+            password: String::from("wake-up!"),
+            port: 8999,
+            groups: None,
+            hosts: None,
+        }
+    }
+}
 
-    for (i, part) in address.split(':').enumerate() {
-        bytes[i] = u8::from_str_radix(part, 16)
-            .expect("Each part of the address should be a valid hexadecimal number");
+pub fn read_configuration() -> Option<Configuration> {
+    CONFIGURATION.read().unwrap().clone()
+}
+
+pub fn write_configuration(configuration: Configuration) -> Configuration {
+    let mut write_lock = CONFIGURATION.write().unwrap();
+
+    if let None = *write_lock {
+        *write_lock = Some(configuration.clone());
+    } else {
+        let actual_config = (*write_lock).as_mut().unwrap();
+        actual_config.update(&configuration);
     }
 
-    bytes
+    configuration
 }

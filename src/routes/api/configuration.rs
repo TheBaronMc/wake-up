@@ -1,13 +1,13 @@
 use rocket::http::Status;
 
 use crate::{
-    configuration::{read_configuration, CONFIGURATION_PATH},
+    reader::load_configuration,
     routes::{errors::ApiError, guard::token::Token},
 };
 
 #[get("/reload")]
 fn reload(_token: Token) -> Result<Status, ApiError> {
-    match read_configuration(CONFIGURATION_PATH) {
+    match load_configuration() {
         Ok(_) => Ok(Status::Ok),
         Err(error) => {
             println!("[API] Failed to reload configuration {}", error);
