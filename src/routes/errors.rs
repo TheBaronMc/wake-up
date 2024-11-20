@@ -29,6 +29,13 @@ impl ApiError {
             message,
         }
     }
+
+    pub fn internal() -> Self {
+        ApiError {
+            code: Status::InternalServerError,
+            message: None,
+        }
+    }
 }
 
 #[rocket::async_trait]
@@ -39,8 +46,6 @@ impl<'r> Responder<'r, 'static> for ApiError {
             None => json!({ "code": self.code.code }),
         }
         .to_string();
-
-        print!("toto");
 
         Response::build()
             .header(ContentType::JSON)

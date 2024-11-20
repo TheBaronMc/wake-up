@@ -12,6 +12,7 @@ pub static PASSWORD_ENV_VAR: &str = "WAKE_UP_PASSWORD";
 pub static API_ENABLED_ENV_VAR: &str = "WAKE_UP_API_ENABLED";
 pub static WEB_ENABLED_ENV_VAR: &str = "WAKE_UP_WEB_ENABLED";
 
+#[derive(Debug)]
 struct ConfigurationFromFile {
     password: Option<String>,
     port: Option<u16>,
@@ -22,9 +23,19 @@ struct ConfigurationFromFile {
 }
 
 pub fn load_configuration() -> Result<Configuration, String> {
+    debug!("[CONFIGURATION] loading configuration");
+
     let current_configuration = read_configuration().unwrap_or(Configuration::default());
+    debug!(
+        "[CONFIGURATION] Current configuration {:?}",
+        current_configuration
+    );
 
     let configuration_from_file = read_configuration_file("configuration.yml")?;
+    debug!(
+        "[CONFIGURATION] Configuration from file {:?}",
+        configuration_from_file
+    );
 
     let new_password: String = env::var(PASSWORD_ENV_VAR).ok().unwrap_or(
         configuration_from_file
@@ -66,6 +77,7 @@ pub fn load_configuration() -> Result<Configuration, String> {
         configuration_from_file.hosts,
     );
 
+    debug!("[configuration] New Configuration {:?}", new_configuration);
     Ok(write_configuration(new_configuration))
 }
 

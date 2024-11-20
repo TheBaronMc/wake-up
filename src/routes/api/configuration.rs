@@ -6,14 +6,16 @@ use crate::{
 };
 
 #[get("/reload")]
-fn reload(_token: Token) -> Result<Status, ApiError> {
-    match load_configuration() {
-        Ok(_) => Ok(Status::Ok),
-        Err(error) => {
-            println!("[API] Failed to reload configuration {}", error);
-            Err(ApiError::custom(Status::BadRequest, Some(error)))
-        }
-    }
+fn reload(authorization: Result<Token, ApiError>) -> Result<Status, ApiError> {
+    authorization?;
+
+    load_configuration().or_else(|error| {
+        println!("[Configuration] Failed to reload {}", error);
+        Err(ApiError::custom(Status::BadRequest, Some(error)))
+    })?;
+
+    println!("[Configuration] Realoaded.");
+    Ok(Status::Ok)
 }
 
 pub fn stage() -> rocket::fairing::AdHoc {

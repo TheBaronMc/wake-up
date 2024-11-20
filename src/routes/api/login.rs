@@ -9,15 +9,15 @@ struct Credentials<'r> {
 }
 
 #[derive(Serialize)]
-struct Token {
+struct AuthentificationSuccessBody {
     token: String,
 }
 
 #[post("/login", data = "<task>")]
-fn login(task: Json<Credentials<'_>>) -> Result<Json<Token>, ApiError> {
+fn login(task: Json<Credentials<'_>>) -> Result<Json<AuthentificationSuccessBody>, ApiError> {
     if verify_pass(task.password) {
         match create_token() {
-            Ok(token) => Ok(Json(Token { token })),
+            Ok(token) => Ok(Json(AuthentificationSuccessBody { token })),
             Err(error) => Err(ApiError::unauthorized(Some(error))),
         }
     } else {

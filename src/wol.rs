@@ -1,3 +1,5 @@
+use log::info;
+
 use std::net::{Ipv4Addr, SocketAddrV4, UdpSocket};
 
 pub trait Wake {
@@ -10,7 +12,7 @@ pub fn wake_on_lan(mac_address: &[u8; 12], port: &u16) -> () {
         .map(|b| format!("{:02X}", b))
         .collect::<Vec<String>>()
         .join(":");
-    print!(
+    info!(
         "[WoL] Sending magic packet to host: {}, port: {} ->",
         address_str, port
     );
@@ -20,7 +22,7 @@ pub fn wake_on_lan(mac_address: &[u8; 12], port: &u16) -> () {
     let broadcast_addr = SocketAddrV4::new(Ipv4Addr::BROADCAST, port.to_owned());
     let _ = socket.send_to(&packet, broadcast_addr);
 
-    print!(
+    info!(
         "[WoL] Magic packet sent to host: {}, port: {} ->",
         address_str, port
     );

@@ -1,4 +1,5 @@
 use figment::Figment;
+use log::{info, LevelFilter};
 use reader::load_configuration;
 use routes::catchers;
 
@@ -15,9 +16,14 @@ mod wol;
 
 #[rocket::main]
 async fn main() -> () {
+    env_logger::builder()
+        .filter_level(LevelFilter::Debug)
+        .init();
+
+    info!("Start");
     let configuration_result = load_configuration();
     if let Err(error) = configuration_result {
-        println!("{}", error);
+        error!("{}", error);
         return;
     }
 
