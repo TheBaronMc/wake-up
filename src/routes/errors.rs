@@ -25,7 +25,7 @@ impl ApiError {
 
     pub fn not_found(message: Option<String>) -> Self {
         ApiError {
-            code: Status::NoContent,
+            code: Status::NotFound,
             message,
         }
     }
@@ -39,6 +39,8 @@ impl<'r> Responder<'r, 'static> for ApiError {
             None => json!({ "code": self.code.code }),
         }
         .to_string();
+
+        print!("toto");
 
         Response::build()
             .header(ContentType::JSON)
