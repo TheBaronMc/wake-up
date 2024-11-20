@@ -12,7 +12,7 @@ pub static PASSWORD_ENV_VAR: &str = "WAKE_UP_PASSWORD";
 pub static API_ENABLED_ENV_VAR: &str = "WAKE_UP_API_ENABLED";
 pub static WEB_ENABLED_ENV_VAR: &str = "WAKE_UP_WEB_ENABLED";
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 struct ConfigurationFromFile {
     password: Option<String>,
     port: Option<u16>,
@@ -31,7 +31,11 @@ pub fn load_configuration() -> Result<Configuration, String> {
         current_configuration
     );
 
-    let configuration_from_file = read_configuration_file("configuration.yml")?;
+    let configuration_from_file =
+        read_configuration_file("configuration.yml").unwrap_or_else(|error| {
+            error!("[CONFIGURATION] Error while read configuration file {error}");
+            ConfigurationFromFile::default()
+        });
     debug!(
         "[CONFIGURATION] Configuration from file {:?}",
         configuration_from_file
@@ -91,10 +95,15 @@ fn str_to_bool(s: &str) -> Option<bool> {
 
 fn read_configuration_file(path: &str) -> Result<ConfigurationFromFile, String> {
     match fs::read_to_string(path) {
-        Ok(file_content) => match YamlLoader::load_from_str(file_content.as_str()) {
-            Ok(documents) => parse_configuration(&documents[0]),
-            Err(error) => Err(error.to_string()),
-        },
+        Ok(file_content) => {
+            if file_content.len() == 0 {
+                return Err("File empty".to_string());
+            }
+            match YamlLoader::load_from_str(file_content.as_str()) {
+                Ok(documents) => parse_configuration(&documents[0]),
+                Err(error) => Err(error.to_string()),
+            }
+        }
         Err(error) => Err(error.to_string()),
     }
 }
