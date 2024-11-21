@@ -10,10 +10,9 @@ check_requirements() {
 }
 
 start() {
-    {
-        cargo run --release 2> /dev/null &
-    }
-    return $!
+    cargo run --release 2> /dev/null &
+    sleep 1
+    pid=$!
 }
 
 down() {
@@ -25,6 +24,8 @@ test() {
     local test_name=$1
     local test_function=$2
 
+    start
+
     echo -n "$test_name : "
 
     $test_function 2&> /dev/null
@@ -35,22 +36,28 @@ test() {
         echo "❌"
         errors=$(($errors+1))
     fi
+
+    down $pid
 }
 
 check_requirements
 
 login_wrong_pass() {
-    curl -f --location 'localhost:12345/api/login' \
+    curl -f --location 'localhost:8999/api/login' \
     --header 'Content-Type: application/json' \
     --data '{
         "password": "toto"
     }'
 
-    return $?
+    if [[ $? != 0 ]]; then
+        return 0
+    else
+        return 1
+    fi
 }
 
 login_good_pass() {
-    curl -f --location 'localhost:12345/api/login' \
+    curl -f --location 'localhost:8999/api/login' \
     --header 'Content-Type: application/json' \
     --data '{
         "password": "wake-up!"
