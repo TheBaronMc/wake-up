@@ -1,3 +1,4 @@
+use log::info;
 use rocket::http::Status;
 
 use crate::{
@@ -10,11 +11,11 @@ fn reload(authorization: Result<Token, ApiError>) -> Result<Status, ApiError> {
     authorization?;
 
     load_configuration().or_else(|error| {
-        println!("[Configuration] Failed to reload {}", error);
+        error!("[Configuration] Failed to reload {}", error);
         Err(ApiError::custom(Status::BadRequest, Some(error)))
     })?;
 
-    println!("[Configuration] Realoaded.");
+    info!("[Configuration] Realoaded.");
     Ok(Status::Ok)
 }
 
