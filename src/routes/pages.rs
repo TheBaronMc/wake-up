@@ -9,7 +9,7 @@ use rocket::http::CookieJar;
 
 use crate::{
     auth::{create_token, verify_pass},
-    configuration::read_configuration,
+    configuration::{read_global_configuration, Configuration},
 };
 
 static SESSION_TOKEN_KEY: &str = "token";
@@ -17,17 +17,16 @@ static SESSION_TOKEN_KEY: &str = "token";
 #[get("/")]
 fn index(cookies: &CookieJar<'_>) -> Result<Template, Redirect> {
     match cookies.get(SESSION_TOKEN_KEY) {
-        Some(_) => {
-            let current_configuration = read_configuration().unwrap();
-
-            Ok(Template::render(
+        Some(_) => Ok(read_global_configuration(|global_configuration| {
+            let configuration: &Configuration = global_configuration.unwrap();
+            Template::render(
                 "index",
                 context! {
-                    groups: &current_configuration.groups(),
-                    hosts: &current_configuration.hosts()
+                    groups: configuration.groups(),
+                    hosts: configuration.hosts()
                 },
-            ))
-        }
+            )
+        })),
         None => Err(Redirect::to(uri!(login_get))),
     }
 }

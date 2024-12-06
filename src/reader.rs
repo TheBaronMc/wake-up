@@ -3,7 +3,7 @@ use std::{env, fs};
 
 use yaml_rust::{Yaml, YamlLoader};
 
-use crate::configuration::{read_configuration, write_configuration, Configuration};
+use crate::configuration::{read_global_configuration, update_global_configuration, Configuration};
 use crate::group::Group;
 use crate::host::Host;
 
@@ -22,14 +22,8 @@ struct ConfigurationFromFile {
     hosts: Option<HashMap<String, Host>>,
 }
 
-pub fn load_configuration() -> Result<Configuration, String> {
+pub fn load_configuration() -> Result<(), String> {
     debug!("[CONFIGURATION] loading configuration");
-
-    let current_configuration = read_configuration().unwrap_or(Configuration::default());
-    debug!(
-        "[CONFIGURATION] Current configuration {:?}",
-        current_configuration
-    );
 
     let configuration_from_file =
         read_configuration_file("configuration.yml").unwrap_or_else(|error| {
@@ -41,21 +35,6 @@ pub fn load_configuration() -> Result<Configuration, String> {
         configuration_from_file
     );
 
-    let new_password: String = env::var(PASSWORD_ENV_VAR).ok().unwrap_or(
-        configuration_from_file
-            .password
-            .unwrap_or(current_configuration.password().clone()),
-    );
-
-    let new_port: u16 = match env::var(PORT_ENV_VAR).ok() {
-        Some(value) => {
-            u16::from_str_radix(value.as_str(), 10).unwrap_or(current_configuration.port().clone())
-        }
-        None => configuration_from_file
-            .port
-            .unwrap_or(current_configuration.port().clone()),
-    };
-
     let api_enabled: Option<bool> = env::var(API_ENABLED_ENV_VAR)
         .ok()
         .and_then(|s| str_to_bool(s.as_str()));
@@ -64,25 +43,50 @@ pub fn load_configuration() -> Result<Configuration, String> {
         .ok()
         .and_then(|s| str_to_bool(s.as_str()));
 
-    let new_configuration: Configuration = Configuration::new(
-        new_password,
-        new_port,
-        api_enabled.unwrap_or(
+    let new_configuration: Configuration = read_global_configuration(|global_configuration| {
+        let current_configuration: &Configuration =
+            global_configuration.unwrap_or(&Configuration::default());
+        debug!(
+            "[CONFIGURATION] Current configuration {:?}",
+            current_configuration
+        );
+
+        let new_password: String = env::var(PASSWORD_ENV_VAR).ok().unwrap_or(
             configuration_from_file
-                .api_enabled
-                .unwrap_or(current_configuration.api_enabled().clone()),
-        ),
-        web_enabled.unwrap_or(
-            configuration_from_file
-                .web_enabled
-                .unwrap_or(current_configuration.web_enabled().clone()),
-        ),
-        configuration_from_file.groups,
-        configuration_from_file.hosts,
-    );
+                .password
+                .unwrap_or(*current_configuration.password()),
+        );
+
+        let new_port: u16 = match env::var(PORT_ENV_VAR).ok() {
+            Some(value) => u16::from_str_radix(value.as_str(), 10)
+                .unwrap_or(current_configuration.port().clone()),
+            None => configuration_from_file
+                .port
+                .unwrap_or(*current_configuration.port()),
+        };
+
+        Configuration::new(
+            new_password,
+            new_port,
+            api_enabled.unwrap_or(
+                configuration_from_file
+                    .api_enabled
+                    .unwrap_or(current_configuration.api_enabled().clone()),
+            ),
+            web_enabled.unwrap_or(
+                configuration_from_file
+                    .web_enabled
+                    .unwrap_or(current_configuration.web_enabled().clone()),
+            ),
+            configuration_from_file.groups,
+            configuration_from_file.hosts,
+        )
+    });
 
     debug!("[configuration] New Configuration {:?}", new_configuration);
-    Ok(write_configuration(new_configuration))
+    update_global_configuration(&new_configuration);
+
+    Ok(())
 }
 
 fn str_to_bool(s: &str) -> Option<bool> {

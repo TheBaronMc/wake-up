@@ -7,7 +7,7 @@ use crate::host::Host;
 type GroupList = HashMap<String, Group>;
 type HostList = HashMap<String, Host>;
 
-static CONFIGURATION: RwLock<Option<Configuration>> = RwLock::new(None);
+static GLOBAL_CONFIGURATION: RwLock<Option<Configuration>> = RwLock::new(None);
 
 #[derive(Debug, Clone)]
 pub struct Configuration {
@@ -38,10 +38,12 @@ impl Configuration {
         }
     }
 
-    fn update(&mut self, new_configuration: &Configuration) {
+    fn update(&mut self, new_configuration: &Configuration) -> &Self {
         self.password = new_configuration.password.clone();
         self.groups = new_configuration.groups.clone();
         self.hosts = new_configuration.hosts.clone();
+
+        self
     }
 
     pub fn password(&self) -> &String {
@@ -52,12 +54,12 @@ impl Configuration {
         &self.port
     }
 
-    pub fn api_enabled(&self) -> bool {
-        self.api_enabled.clone()
+    pub fn api_enabled(&self) -> &bool {
+        &self.api_enabled
     }
 
-    pub fn web_enabled(&self) -> bool {
-        self.web_enabled.clone()
+    pub fn web_enabled(&self) -> &bool {
+        &self.web_enabled
     }
 
     pub fn groups(&self) -> &Option<GroupList> {
@@ -82,19 +84,21 @@ impl Default for Configuration {
     }
 }
 
-pub fn read_configuration() -> Option<Configuration> {
-    CONFIGURATION.read().unwrap().clone()
+pub fn read_global_configuration<F, R>(f: F) -> R
+where
+    F: FnOnce(Option<&Configuration>) -> R,
+{
+    let guard = GLOBAL_CONFIGURATION.read().unwrap();
+    f((*guard).as_ref())
 }
 
-pub fn write_configuration(configuration: Configuration) -> Configuration {
-    let mut write_lock = CONFIGURATION.write().unwrap();
+pub fn update_global_configuration(configuration: &Configuration) {
+    let mut write_lock = GLOBAL_CONFIGURATION.write().unwrap();
 
     if let None = *write_lock {
         *write_lock = Some(configuration.clone());
     } else {
         let actual_config = (*write_lock).as_mut().unwrap();
-        actual_config.update(&configuration);
+        actual_config.update(configuration);
     }
-
-    configuration
 }
