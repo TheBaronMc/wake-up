@@ -17,9 +17,13 @@
 
 The prupose of this page is to authentify the user. To do so, use the password delcared in the configuration file.
 
+<img width="1624" alt="image" src="https://github.com/user-attachments/assets/a0334329-ba63-4bdf-b237-3f9c5f2eb420">
+
 ### Wake up
 
 In this page you can wake up a computer or a group of computer.
+
+![image](https://github.com/user-attachments/assets/e5eb083e-0cd8-4582-86be-36516190ddd2)
 
 ## API
 
