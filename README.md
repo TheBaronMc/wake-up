@@ -15,11 +15,11 @@
 
 ### Login
 
-The prupose of this page is to authentify the user. You need to use enter the password declared in the configuration file.
+The prupose of this page is to authentify the user. To do so, use the password delcared in the configuration file.
 
 ### Wake up
 
-In this page you can wake up an computer or a group of computer.
+In this page you can wake up a computer or a group of computer.
 
 ## API
 
@@ -124,30 +124,54 @@ In this page you can wake up an computer or a group of computer.
 
 ## Configuration
 
+### Configuration file
+
+Located at the root of the projet, somberly named *configuration.yml*, the file content is in YAML format.
+
+| Level | Keyword       | Description        | Default value |
+|-------|---------------|--------------------|---------------|
+| 0     | `password`    | Login Password     | wake-up!      |
+| 0     | `api_enabled` | Enable the API     | true          |
+| 0     | `web_enabled` | Enable the Web app | true          |
+| 0     | `port`        | Application port   | 8999          |
+| 0     | `groups`      | Group List         | /             |
+| 1     | `<GroupName>` |                    | /             |
+| 2     | `<HostName>`  |                    | /             |
+| 3     | `port`        | WakeOnLan port     | 6             |
+| 3     | `address`     | MAC address        | /             |
+| 0     | `hosts`       |                    | /             |
+| 1     | `<HostName>`  |                    | /             |
+| 2     | `port`        | WakeOnLan port     | 6             |
+| 2     | `address`     | MAC address        | /             |
+
 Here is example of configuration file:
 ```yml
-password: DontUseThisPassword
+password: wake-up!
+api_enabled: false
+web_enabled: true
+port: 12345
 groups:
-  groupe1:
-    machine1.1:
-      port: 9
-      address: 3A:1F:5D:7C:8A:3B
-    machine1.2:
-      port: 7
-      address: C4:22:5B:0D:9E
-  groupe2:
-    machine2.1:
+  DHCP:
+    Server1:
       address: 9D:2B:4F:7A:12
-    machine1.2:
+    Server2:
       port: 6
       address: A0:8C:3D:5E:9F:76
 hosts:
-  machine1.1:
+  RaspberryPi:
     address: F1:6A:4B:3C:9D:21
-  machine3:
+  NAS:
     port: 6
     address: B3:11:8E:9F:4A:5D
 ```
+
+### Environment variables
+
+You can overwrite configuration by using the follow environment variables:
++ `WAKE_UP_PORT`
++ `WAKE_UP_PASSWORD`
++ `WAKE_UP_API_ENABLED`
++ `WAKE_UP_WEB_ENABLED`
 
 ## Security
 
