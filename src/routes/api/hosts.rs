@@ -2,7 +2,8 @@ use log::info;
 use rocket::http::Status;
 
 use crate::{
-    configuration::{read_global_configuration, Configuration},
+    configuration::read_global_configuration,
+    host::Host,
     routes::{errors::ApiError, guard::token::Token},
     wol::Wake,
 };
@@ -11,26 +12,28 @@ use crate::{
 fn wake_up_host(authorization: Result<Token, ApiError>, name: &str) -> Result<Status, ApiError> {
     authorization?;
 
-    read_global_configuration(|global_configuration| {
-        let config: Configuration = global_configuration.ok_or_else(|| {
-            let message: String = format!("No user named {name}");
-            error!("[hosts] {message}");
-            ApiError::internal()
-        })?;
+    let found_host: Option<Host> = read_global_configuration(|global_configuration| {
+        global_configuration
+            .and_then(|configuration| {
+                configuration
+                    .hosts()
+                    .as_ref()
+                    .and_then(|hosts| hosts.get(name))
+            })
+            .cloned()
+    });
 
-        let host = config
-            .hosts()
-            .as_ref()
-            .and_then(|hosts| hosts.get(name))
-            .ok_or_else(|| {
-                let message: String = format!("No host {} found", name);
-                info!("[hosts] {message}");
-                ApiError::not_found(Some(message))
-            })?;
-
-        host.wake();
-        Ok(Status::Ok)
-    })
+    match found_host {
+        Some(host) => {
+            host.wake();
+            Ok(Status::Ok)
+        }
+        None => {
+            let message: String = format!("No host {} found", name);
+            info!("[hosts] {message}");
+            Err(ApiError::not_found(Some(message)))
+        }
+    }
 }
 
 pub fn stage() -> rocket::fairing::AdHoc {

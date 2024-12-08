@@ -44,8 +44,9 @@ pub fn load_configuration() -> Result<(), String> {
         .and_then(|s| str_to_bool(s.as_str()));
 
     let new_configuration: Configuration = read_global_configuration(|global_configuration| {
+        let default_configuration = Configuration::default();
         let current_configuration: &Configuration =
-            global_configuration.unwrap_or(&Configuration::default());
+            global_configuration.unwrap_or(&default_configuration);
         debug!(
             "[CONFIGURATION] Current configuration {:?}",
             current_configuration
@@ -54,7 +55,7 @@ pub fn load_configuration() -> Result<(), String> {
         let new_password: String = env::var(PASSWORD_ENV_VAR).ok().unwrap_or(
             configuration_from_file
                 .password
-                .unwrap_or(*current_configuration.password()),
+                .unwrap_or(current_configuration.password().to_string()),
         );
 
         let new_port: u16 = match env::var(PORT_ENV_VAR).ok() {

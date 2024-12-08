@@ -11,7 +11,7 @@ check_requirements() {
 
 start() {
     cargo run --release 2> /dev/null &
-    sleep 0.2
+    sleep 0.5
     pid=$!
 }
 

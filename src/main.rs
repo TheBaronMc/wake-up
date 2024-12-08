@@ -1,6 +1,8 @@
+use configuration::read_global_configuration;
 use figment::Figment;
-use log::{info, LevelFilter};
+use log::LevelFilter;
 use reader::load_configuration;
+use rocket::{Build, Rocket};
 use routes::catchers;
 
 #[macro_use]
@@ -20,30 +22,33 @@ async fn main() -> () {
         .filter_level(LevelFilter::Debug)
         .init();
 
-    info!("Start");
-    let configuration_result = load_configuration();
-    if let Err(error) = configuration_result {
-        error!("{}", error);
-        return;
+    if let Err(error) = load_configuration() {
+        panic!("Error while first loading configuration: {}", error)
     }
 
-    let wake_up_config = configuration_result.unwrap();
-    let rocket_config =
-        Figment::from(rocket::Config::figment()).merge(("port", wake_up_config.port()));
+    let rocket: Rocket<Build> = read_global_configuration(|global_configuration| {
+        let configuration =
+            global_configuration.expect("Error while reading configuration at launch time");
 
-    let mut rocket = rocket::custom(rocket_config).attach(catchers::stage());
+        let rocket_config =
+            Figment::from(rocket::Config::figment()).merge(("port", configuration.port()));
 
-    if *wake_up_config.api_enabled() {
-        rocket = rocket.attach(routes::pages::stage());
-    }
+        let mut rocket = rocket::custom(rocket_config).attach(catchers::stage());
 
-    if *wake_up_config.web_enabled() {
-        rocket = rocket
-            .attach(routes::api::login::stage())
-            .attach(routes::api::configuration::stage())
-            .attach(routes::api::groups::stage())
-            .attach(routes::api::hosts::stage());
-    }
+        if *configuration.api_enabled() {
+            rocket = rocket.attach(routes::pages::stage());
+        }
+
+        if *configuration.web_enabled() {
+            rocket = rocket
+                .attach(routes::api::login::stage())
+                .attach(routes::api::configuration::stage())
+                .attach(routes::api::hosts::stage())
+                .attach(routes::api::groups::stage());
+        }
+
+        rocket
+    });
 
     rocket.launch().await.expect("Error while lauching rocket");
 
