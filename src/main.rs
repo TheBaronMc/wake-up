@@ -35,11 +35,11 @@ async fn main() -> () {
 
         let mut rocket = rocket::custom(rocket_config).attach(catchers::stage());
 
-        if *configuration.api_enabled() {
+        if *configuration.web_enabled() {
             rocket = rocket.attach(routes::pages::stage());
         }
 
-        if *configuration.web_enabled() {
+        if *configuration.api_enabled() {
             rocket = rocket
                 .attach(routes::api::login::stage())
                 .attach(routes::api::configuration::stage())
