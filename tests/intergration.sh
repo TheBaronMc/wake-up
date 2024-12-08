@@ -1,4 +1,12 @@
 #!/bin/bash
+if [[ $1 == "release" ]]; then
+    env="--release"
+elif [[ $1 == "debug" ]]; then
+    env=""
+else
+    env=""
+fi
+
 check_requirements() {
     tools=(cargo curl)
     for tool in "${tools[@]}"; do
@@ -10,8 +18,8 @@ check_requirements() {
 }
 
 start() {
-    cargo run --release 2> /dev/null &
-    sleep 0.5
+    cargo run $env 2> /dev/null &
+    sleep 1
     pid=$!
 }
 
@@ -38,7 +46,6 @@ test() {
         echo "❌"
         errors=$(($errors+1))
 
-        echo "========================== BUILD =========================="
         echo "-------------------------- OUPUT --------------------------"
         cat $output_file
         echo "-----------------------------------------------------------"
@@ -294,7 +301,7 @@ EOF
 # RUN TESTS
 
 echo "========================== BUILD =========================="
-cargo build --release
+cargo build $env
 echo "========================== TESTS =========================="
 test "/login good password" login_good_pass
 test "/login wrong password" login_wrong_pass

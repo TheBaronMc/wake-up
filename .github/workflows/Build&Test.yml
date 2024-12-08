@@ -1,0 +1,36 @@
+name: Build & Test
+
+on:
+    workflow_call:
+      inputs:
+        environment:
+          type: string
+          description: release / debug
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout
+          uses: actions/checkout@v4
+        - name: Install rustup
+          run: |
+            apt update
+            apt-get install -y rustup curl
+          shell: bash
+        - name: Cache Rust dependencies
+          uses: actions/cache@v3
+          with:
+            path: ~/.cargo
+            key: ${{ runner.os }}-${{ inputs.environment }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+            restore-keys: |
+              ${{ runner.os }}-cargo-
+        - name: Install rust tool chain
+          run: |
+            rustup default stable
+          shell: bash
+        - name: Run tests
+          run: |
+            chmod 700 tests/integration.sh
+            ./tests/integration.sh
+          shell: bash
