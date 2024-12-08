@@ -33,7 +33,10 @@ async fn main() -> () {
         let rocket_config =
             Figment::from(rocket::Config::figment()).merge(("port", configuration.port()));
 
-        let mut rocket = rocket::custom(rocket_config).attach(catchers::stage());
+        let mut rocket = rocket::custom(rocket_config).attach(catchers::stage(
+            *configuration.web_enabled(),
+            *configuration.api_enabled(),
+        ));
 
         if *configuration.web_enabled() {
             rocket = rocket.attach(routes::pages::stage());

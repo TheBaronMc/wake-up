@@ -18,10 +18,18 @@ fn api_internal_error() -> ApiError {
     ApiError::internal()
 }
 
-pub fn stage() -> rocket::fairing::AdHoc {
-    rocket::fairing::AdHoc::on_ignite("CATCHERS", |rocket| async {
+pub fn stage(web_enable: bool, api_enable: bool) -> rocket::fairing::AdHoc {
+    rocket::fairing::AdHoc::on_ignite("CATCHERS", move |mut rocket| async move {
+        if web_enable {
+            rocket = rocket.register("/", catchers![page_not_found])
+        } else {
+            rocket = rocket.register("/", catchers![api_route_not_found])
+        }
+
+        if api_enable {
+            rocket = rocket.register("/api", catchers![api_route_not_found, api_internal_error])
+        }
+
         rocket
-            .register("/", catchers![page_not_found])
-            .register("/api", catchers![api_route_not_found, api_internal_error])
     })
 }
