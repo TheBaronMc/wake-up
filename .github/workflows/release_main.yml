@@ -9,7 +9,7 @@ on:
 
 jobs:
   build_and_test:
-    uses: .github/workflows/build_and_test.yml
+    uses: ./.github/workflows/build_and_test.yml
     with:
       environment: "release"
   build:
