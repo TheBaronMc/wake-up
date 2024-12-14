@@ -1,11 +1,11 @@
 name: Build & Test
 
 on:
-    workflow_call:
-      inputs:
-        environment:
-          type: string
-          description: release / debug
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        description: release / debug
 
 jobs:
   build_and_test:

@@ -1,0 +1,38 @@
+name: Release Main
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  build_and_test:
+    uses: .github/workflows/build_and_test.yml
+    with:
+      environment: "release"
+  build:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Get version number
+        run: |
+          echo "version=$(cat Cargo.toml | awk -F'"' '/^version =/ {print $2}')" >>  $GITHUB_ENV
+        shell: bash
+
+      - name: Create New "dev" Tag
+        run: |
+          git tag dev
+          git push origin dev
+
+      - name: Create Release
+        run: |
+          gh release create dev --title "Development Release" --prerelease <<< ""
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        shell: bash
