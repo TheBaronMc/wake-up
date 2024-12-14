@@ -15,8 +15,8 @@ jobs:
           uses: actions/checkout@v4
         - name: Install rustup
           run: |
-            apt update
-            apt-get install -y rustup curl
+            sudo apt update
+            sudo apt-get install -y rustup curl
           shell: bash
         - name: Cache Rust dependencies
           uses: actions/cache@v3

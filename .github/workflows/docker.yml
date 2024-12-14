@@ -24,16 +24,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/portfolio:latest,${{ secrets.DOCKERHUB_USERNAME }}/portfolio:${{ github.event.release.tag_name }}
-      - name: executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          port: ${{ secrets.PORT }}
-          script: |
-            cd ${{ secrets.APP_FOLDER }}
-            docker compose pull
-            docker compose down
-            docker compose up -d
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/wake-up:latest,${{ secrets.DOCKERHUB_USERNAME }}/portfolio:${{ github.event.release.tag_name }}
