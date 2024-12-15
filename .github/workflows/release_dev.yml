@@ -33,6 +33,9 @@ jobs:
           gh release delete dev
           git tag -d dev
           git push origin --delete dev
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        shell: bash
 
       - name: Create New "dev" Tag
         run: |
