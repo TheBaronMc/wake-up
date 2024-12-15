@@ -32,10 +32,6 @@ jobs:
           shell: bash
         - name: Run tests
           run: |
-            pwd
-            ls
-            cd ..
-            ls
             chmod 700 ./tests/integration.sh
             ./tests/integration.sh
           shell: bash
