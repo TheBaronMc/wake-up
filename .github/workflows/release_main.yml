@@ -12,7 +12,7 @@ jobs:
     uses: ./.github/workflows/build_and_test.yml
     with:
       environment: "release"
-  build:
+  release:
     needs: build_and_test
     runs-on: ubuntu-latest
     permissions: write-all

@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/build_and_test.yml
     with:
       environment: "debug"
-  build:
+  release:
     needs: build_and_test
     runs-on: ubuntu-latest
     permissions: write-all
@@ -32,6 +32,7 @@ jobs:
         run: |
           gh release delete dev
           git tag -d dev
+          git push origin dev
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         shell: bash
