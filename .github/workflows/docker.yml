@@ -24,4 +24,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/wake-up:latest,${{ secrets.DOCKERHUB_USERNAME }}/portfolio:${{ github.event.release.tag_name }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/wake-up:latest,${{ secrets.DOCKERHUB_USERNAME }}/wake-up:${{ github.event.release.tag_name }}
