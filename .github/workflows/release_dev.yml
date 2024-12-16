@@ -18,33 +18,8 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Check if "dev" tag exists
-        id: check_tag
-        run: |
-          if gh release list | grep dev > /dev/null 2>&1; then
-            echo "exists=true" >> $GITHUB_ENV
-          else
-            echo "exists=false" >> $GITHUB_ENV
-          fi
-
-      - name: Remove Existing "dev" Tag / Release
-        if: env.exists == 'true'
-        run: |
-          gh release delete dev
-          git tag -d dev
-          git push origin dev
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        shell: bash
-
-      - name: Create New "dev" Tag
-        run: |
-          git tag dev
-          git push origin dev
-
-      - name: Create Release
-        run: |
-          gh release create dev --title "Development Release" --prerelease <<< ""
+      - name: Run create pre-release script
+        run: ./scripts/ci/create_pre_release.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         shell: bash

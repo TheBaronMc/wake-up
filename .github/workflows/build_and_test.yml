@@ -32,6 +32,6 @@ jobs:
           shell: bash
         - name: Run tests
           run: |
-            chmod 700 ./tests/integration.sh
-            ./tests/integration.sh
+            chmod 700 ./scripts/ci/tests/integration.sh
+            ./scripts/ci/tests/integration.sh
           shell: bash
