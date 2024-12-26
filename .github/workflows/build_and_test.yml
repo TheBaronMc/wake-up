@@ -19,6 +19,10 @@ jobs:
             sudo apt install -y curl
             sudo curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
           shell: bash
+        - name: Check code format
+          run: | 
+            cargo fmt --check
+          shell: bash
         - name: Cache Rust dependencies
           uses: actions/cache@v3
           with:

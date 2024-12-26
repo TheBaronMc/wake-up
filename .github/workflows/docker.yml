@@ -2,7 +2,7 @@ name: Build docker image & deploy
 
 on:
   release:
-    types: [prereleased]
+    types: [released]
 
 jobs:
   docker:

@@ -215,6 +215,17 @@ cargo build --release --target <target>
 
 ## Developer
 
+If you want to develop, on *Wake-Up!*, you will need to run the following to initialize your hooks.
+
 ```sh
 git config --local include.path ../.gitconfig
 ```
+
+### Git workflow
+
+1. Create a issue
+2. Create a dev branch named with your isse number
+3. Develop you feature
+4. Merge it into `dev` and push
+5. Test it
+6. Create a merge resquest to main (don't forget increase the release number)

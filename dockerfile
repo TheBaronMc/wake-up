@@ -13,6 +13,8 @@ FROM alpine:3.20.3
 
 WORKDIR /app
 COPY --from=builder /app/target/release/wake-up /app
+COPY --from=builder /app/templates /app/templates
+COPY --from=builder /app/static /app/static
 
 RUN chmod 750 wake-up
 
