@@ -1,4 +1,4 @@
-name: Build docker image & deploy
+name: Build docker debug image & deploy
 
 on:
   release:
@@ -23,5 +23,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          file: dockerfile_dev
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/wake-up:latest,${{ secrets.DOCKERHUB_USERNAME }}/wake-up:${{ github.event.release.tag_name }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/wake-up:latest,${{ secrets.DOCKERHUB_USERNAME }}/wake-up:dev
