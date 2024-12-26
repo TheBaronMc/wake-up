@@ -33,6 +33,9 @@ body {
 
     align-items: center;
     justify-content: center;
+
+    animation: appear;
+    animation-duration: 0.5s;
 }
 
 #main-title h1 {
@@ -55,6 +58,9 @@ body {
     border-radius: 2em;
 
     padding: 2em;
+
+    animation: appear;
+    animation-duration: 0.5s;
 }
 
 .group .title {
@@ -142,6 +148,18 @@ body {
     border: white solid 1px;
     border-radius: 15px;
     padding: 1em;
+    animation: appear;
+    animation-duration: 0.5s;
+}
+
+@keyframes appear {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
 
 .login .title {
