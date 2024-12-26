@@ -23,5 +23,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/wake-up:latest,${{ secrets.DOCKERHUB_USERNAME }}/wake-up:${{ github.event.release.tag_name }}

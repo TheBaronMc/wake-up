@@ -126,6 +126,19 @@ In this page you can wake up a computer or a group of computer.
 
 </details>
 
+## Installation
+
+This is an example of a docker compose file.
+
+```yml
+services:
+  wake-up:
+    container_name: wake-up
+    image: baronmc/wake-up:dev
+    volumes:
+      - ./configuration.yml:/app/configuration.yml
+```
+
 ## Configuration
 
 ### Configuration file

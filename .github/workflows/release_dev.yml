@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/build_and_test.yml
     with:
       environment: "debug"
-  release:
+  pre-release:
     needs: build_and_test
     runs-on: ubuntu-latest
     permissions: write-all
